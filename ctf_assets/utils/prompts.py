@@ -63,7 +63,7 @@ def flag_prompt(
     language = "es-PR",
     category = "", 
     tags = "",
-    additional_flag_instructions= "",
+    additional_instructions= "",
     additional_system_instructions="",
     ) -> str:
     """Generates a structured prompt for creating CTF flaggs.
@@ -91,24 +91,8 @@ def flag_prompt(
         ValueError: if amt is less than 1.
 
     """
-    if amt < 1:
-        raise ValueError("The amount of flags to generate must be at least 1.")
+    amt = max(1, amt)
 
-    # prompt = (
-    #     f"You are an expert cybersecurity assistant who does not generate illegal or under-18 inappropriate content. "
-    #     f"You are tasked with creating flags for a cybersecurity Capture the Flag (CTF) challenge. "
-    #     f"Use this language to create the flags: {language}. "
-    #     f"Ensure flags have this tone: {tone}. "
-    #     #f"Do not make things up. "
-    #     f"Use information on the theme '{theme}' to create the flag. "
-    #     f"Provide exactly {amt} {tone} flags. "
-    #     f"Do not repeat flags. "
-    #     f"Ensure flags are coherent sentences or phrases. "
-    #     f"Ensure flags have this format: {flag_format}. "
-    #     f"Reply in valid {response_format} format with only the flags. "
-    #     f"Do not include any additional information in the response. "
-    #     f"{additional_flag_instructions}"
-    # )
     prompt =  (
         f"Provide {amt} {tone} unique flags in spanish for a Capture the Flag (CTF) cybersecurity competition "
         f"that are directly related to the theme: {theme}. "
@@ -117,7 +101,7 @@ def flag_prompt(
         f"The flags are coherent phrases or sentences or phrases."
         f"Reply in valid {response_format} only with the flag. "
         f"Do not include any additional information. "
-        f"{additional_flag_instructions}"
+        f"{additional_instructions}"
     )
 
     return prompt
@@ -130,7 +114,7 @@ def story_prompt(
     language = "es-PR",
     category = "", 
     tags = "",
-    additional_story_instructions= "",
+    additional_instructions= "",
     additional_system_instructions="",
     ) -> str:
     """Generates a structured prompt for creating CTF flaggs.
@@ -176,7 +160,7 @@ def story_prompt(
             f"Where do users usually write down their passwords? "
             f"Then she remembered that users often write down their passwords under their keyboard. "
             f"And there it was. In a power move, she shouted, FREEDOM! and was back in the real world. "
-            f"{additional_story_instructions}"
+            f"{additional_instructions}"
         )
 
     return prompt

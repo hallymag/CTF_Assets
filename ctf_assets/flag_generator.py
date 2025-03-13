@@ -17,7 +17,7 @@ Functions
     flag_format: str = "ctf{}",
     response_format: str = "JSON",
     language: str = "es-PR",
-    additional_flag_instructions: str = "",
+    additional_instructions: str = "",
     additional_system_instructions: str = "",
 ) -> str:`
     Creates user's role content, allowing users to add additional 
@@ -38,7 +38,7 @@ def generate_flags(
     language: str = "es-PR",
     category: str = "",   
     tags: str = "",
-    additional_flag_instructions: str = "",
+    additional_instructions: str = "",
     additional_system_instructions: str = "",
     ):    
     '''Generates Capture the Flag (CTF) flags using OpenAI API.
@@ -53,7 +53,7 @@ def generate_flags(
         language (str): The language to use to generate flags. Defaults to Spanish (Puerto Rico).
         category (str): The category of the challenge.
         tags (str, optional): The skills required to solve the challenge.
-        additional_flag_instructions (str, optional): Additional constraints or 
+        additional_instructions (str, optional): Additional constraints or 
             guidelines for flag generation.
         additional_system_instructions (str, optional): Additional constraints or 
             guidelines for the system.
@@ -75,13 +75,13 @@ def generate_flags(
     prompt = flag_prompt(
         theme = theme,
         tone = tone,
-        amt = amt,
+        amt = max(1, amt),
         flag_format = flag_format,
         response_format = response_format,
         language = language,
         category = category, 
         tags = tags,
-        additional_flag_instructions = additional_flag_instructions,
+        additional_instructions = additional_instructions,
         additional_system_instructions = additional_system_instructions,
     )
     
