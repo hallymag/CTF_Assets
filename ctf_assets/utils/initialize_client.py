@@ -1,15 +1,16 @@
 """
-Module for initializing API client.
+Module for initializing OpenAI API client.
 
 This module retrieves the API key and initializes the API client.
 
-Functions
+Functions:
+        - initialize_openai_client: Ret
 ---------
 - `initialize_openai_client(model_name: str, strict: bool = False) -> openai.OpenAI | None:`
 """
 
 from openai import OpenAI
-from .helpers import fetch_openai_key
+from ctf_assets.utils.helpers import fetch_openai_key
 
 
 def initialize_openai_client(strict: bool = True) -> (OpenAI | None):

@@ -6,49 +6,39 @@ These prompts help generate various types of CTF challenge content, including fl
 and short stories, while ensuring adherence to security and ethical guidelines.
 
 Functions:
-----------
-- system_prompt(additional_instructions: str = "") -> str
-    Generates the content for the system's role, with optional additional instructions.
-- system_prompt: Constructs a structured prompt for OpenAI API extra constraints at the system level.
-- flag_prompt: Constructs a structured prompt for OpenAI API to generating flags.
-- story_prompt: Constructs a structured prompt for OpenAI to generating stories.
-Usage Example:
---------------
+    - system_prompt: Constructs string with system level constraints which include
+        making sure it does not generate illegal contetn and that it is
+        appropriate for under 18, high-school students.
+    - flag_prompt: Constructs a string with the user instructions to generate flags.
+    - story_prompt: Constructs a string with user level instructions to generate stories.
+
+Examples:
+    from openai import openai
     from prompts import system_prompt, flag_prompt
     
     system_content = system_prompt("Ensure all content is beginner-friendly.")
-
-    user_content = flag_prompt(theme="Space Exploration", tone="funny", amt=3, language="en")
-
-Notes:
-------
-- The `system_prompt` function cannot be used in o1 or o1-mini models. In 
-    these models you must include the system role in the flag_prompt.
-- The `flag_prompt` function structures the request to ensure adherence 
-    to theme and tone.
+    flag_content = flag_prompt(theme="Space Exploration", tone="funny", amt=3, language="en")
+    story_content = story_prompt(theme="Cybersecurity Adventure", tone="dramatic", amt=1, language="en")
 """
 
 def system_prompt(additional_system_instructions = "") -> str:
-    """Generates a strig with the system's role content and allows for  
-    additional instructions.
+    """
+    Generates system level constraints for content generation. 
 
-    This function creates text that guides the model.It includes 
-    instructions to ensure it doesn't provide illegal content, and 
-    that responses are appropriate for under-18 high school students.
+    This function creates a system level prompt to guide the model so
+    it doesn't generate illegal or under-18 year old high school level content.
+    It also allows the user to add additional constraints or guidelines.
     
-    Args
-    -----
-        additional_system_instructions (str, optional): Additional constraints
-        or guidelines.
+    Args:
+        additional_system_instructions (str): Additional constraints or guidelines. Defaults to "".        
         
-    Returns
-    -------
-        str: The system's role content string with any additional instructions.
+    Returns:
+        str: The formatted string containing the system level constraints and guidelines.
     """
     prompt = (
-        f"You are an expert cybersecurity assistant. "
-        f"You do not generate illegal or under-18 inappropiate content. "
-        f"You help generate content for Capture the Flag (CTF) challenges. "
+        "You are an expert cybersecurity assistant. "
+        "You do not generate illegal or under-18 inappropiate content. "
+        "You help generate content for Capture the Flag (CTF) challenges. "
         f"{additional_system_instructions}"
     )
 
@@ -56,50 +46,43 @@ def system_prompt(additional_system_instructions = "") -> str:
 
 def flag_prompt(
     theme="",
-    tone = "", 
+    tone = "neutral", 
     amt = 1,
-    flag_format = "ctf{}",
+    flag_format = "ctf{..}",
     response_format = "JSON",
     language = "es-PR",
-    category = "", 
-    tags = "",
     additional_instructions= "",
     additional_system_instructions="",
     ) -> str:
-    """Generates a structured prompt for creating CTF flaggs.
-
-    This function constructs a prompt that provides instructions for 
-    generating CTF flags using a specified theme, tone, language, 
-    flag_format, amount of flags, and a format for the response.
-    
-    Args
-    ----
-        theme (str, optional): The theme of the challenge. Defaults to "".
-        tone (str, optional): The tone of the flags. Defaults to "".
-        amt (int, optional): The amount of flags to generate. Defaults to 1.
-        flag_format (str, optional): The format of the flags. Defaults to "ctf{}".
-        response_format (str, optional): The format for the response. Defaults to "JSON".
-        language (str, optional): The language to use to generate flags. Defaults to "es-PR".
-        add_instructions_flags (str, optional): Further instructions on how to generate the flag.
-            
-    Returns
-    -------
-        str: A formatted string containing the structured prompt for flag generation.
-    
-    Raises
-    ------
-        ValueError: if amt is less than 1.
-
     """
+    Generates a structured prompt with instructions for generating flags.
+     
+    Constructs a prompt to guide flag generation based on theme, tone,
+    and additional parameters.
+
+    Args:
+        theme (str): The theme of the challenge. Defaults to "".
+        tone (str): The tone of the flags. Defaults to "neutral".
+        amt (int): The amount of flags to generate. Defaults to 1.
+        flag_format (str): The format of the flags. Defaults to "ctf{..}".
+        response_format (str): The format for the response. Defaults to "JSON".
+        language (str): The language used to generate flags. Defaults to "es-PR".
+        additional_instructions (str): Additional instructions for flag generation. Defaults to "".
+            
+    Returns:
+        str: A string with all instructions to generate a flag.
+    """
+    # Handle the case where passes 0 or a negative number
     amt = max(1, amt)
 
     prompt =  (
-        f"Provide {amt} {tone} unique flags in spanish for a Capture the Flag (CTF) cybersecurity competition "
+        f"{additional_system_instructions}"
+        f"Provide {amt} {tone} unique flags in {language}. "
         f"that are directly related to the theme: {theme}. "
         f"Respond in a {tone} tone and language. "
         f"Flags must have this format: {flag_format}. "
-        f"The flags are coherent phrases or sentences or phrases."
         f"Reply in valid {response_format} only with the flag. "
+        f"The flags are coherent phrases or sentences or phrases."
         f"Do not include any additional information. "
         f"{additional_instructions}"
     )
@@ -108,59 +91,77 @@ def flag_prompt(
 
 def story_prompt(
     theme="",
-    tone = "", 
+    tone = "neutral", 
     amt = 1,
-    response_format = "JSON",
     language = "es-PR",
-    category = "", 
-    tags = "",
     additional_instructions= "",
     additional_system_instructions="",
     ) -> str:
-    """Generates a structured prompt for creating CTF flaggs.
-
-    This function constructs a prompt that provides instructions for 
-    generating CTF stories using a specified theme, tone, language, 
-    flag_format, amount of stories, and a format for the response.
-    
-    Args
-    ----
-        theme (str, optional): The theme of the challenge. Defaults to "".
-        tone (str, optional): The tone of the stories. Defaults to "".
-        amt (int, optional): The amount of stories to generate. Defaults to 1.
-        response_format (str, optional): The format for the response. Defaults to "JSON".
-        language (str, optional): The language to use to generate stories. Defaults to "es-PR".
-        additional_story_instructions (str, optional): Extra constraint for story generation.
-            
-    Returns
-    -------
-        str: A formatted string containing the structured prompt for flag generation.
-    
-    Raises
-    ------
-        ValueError: if amt is less than 1.
-
     """
-    if amt < 1:
-        raise ValueError("The amount of stories to generate must be at least 1.")
+    Generates a structured prompt with instructions for generating stories.
+     
+    Constructs a prompt to guide story generation based on theme, tone,
+    and additional parameters.
 
-    # )
+    Args:
+        theme (str): The theme of the challenge. Defaults to "".
+        tone (str): The tone of the flags. Defaults to "neutral".
+        amt (int): The amount of flags to generate. Defaults to 1.
+        response_format (str): The format for the response. Defaults to "JSON".
+        language (str): The language used to generate flags. Defaults to "es-PR".
+        additions_instructions (str): Further instructions on how to generate the flag. Defaults to "".
+            
+    Returns:
+        str: A string with instructions to generate a flag.
+    """
+    amt = max(1, amt)
+
     prompt =  (
-            f"{additional_system_instructions}"
-            f"that are directly related to the theme: {theme}. "
-            f"Respond with a story that is or sounds {tone}. "
-            f"Reply in valid {response_format} ."
-            f"Reply only with the story. Do not include additional information. "
-            f"Example: Once upon a time.\n"
-            f"In a land like no other, there was a young hacker named Alice. "
-            f"She was a brilliant coder who found herself trapped in the digital world. "
-            f"In order to escape, she had to solve a series of cybersecurity challenges. "
-            f"Each challenge gave her hints on where to look. She did not want to be "
-            f"be stuck there for one second longer so she thought to herself, "
-            f"Where do users usually write down their passwords? "
-            f"Then she remembered that users often write down their passwords under their keyboard. "
-            f"And there it was. In a power move, she shouted, FREEDOM! and was back in the real world. "
-            f"{additional_instructions}"
+        f"{additional_system_instructions}"
+        f"Generate {amt} {tone} stories about {theme} in {language}. "
+        f"Do not mix double and single quotes. "
+        f"Return them as a JSON list under the key 'stories'. "
+        f"Reply only with the stories. Do not include a title or any additional information. "
+        f"Do not add any extra explanations, just return the stories as a JSON list."
+        f"{additional_instructions}"
+        )
+
+    return prompt
+
+def story_prompt_with_title(
+    theme="",
+    tone = "neutral", 
+    amt = 1,
+    language = "es-PR",
+    additional_instructions= "",
+    additional_system_instructions="",
+    ) -> str:
+    """
+    Generates a structured prompt with instructions for generating stories.
+     
+    Constructs a prompt to guide story generation based on theme, tone,
+    and additional parameters.
+
+    Args:
+        theme (str): The theme of the challenge. Defaults to "".
+        tone (str): The tone of the flags. Defaults to "neutral".
+        amt (int): The amount of flags to generate. Defaults to 1.
+        response_format (str): The format for the response. Defaults to "JSON".
+        language (str): The language used to generate flags. Defaults to "es-PR".
+        additions_instructions (str): Further instructions on how to generate the flag. Defaults to "".
+            
+    Returns:
+        str: A string with instructions to generate a flag.
+    """
+    amt = max(1, amt)
+
+    prompt =  (
+        f"{additional_system_instructions}"
+        f"Generate {amt} {tone} stories about {theme} in {language}. "        
+        f"Do not mix double and single quotes. "
+        f"Return them as a JSON list under the key 'stories'. "
+        f"Do not add any extra explanations, just return the stories as a JSON list."
+        f"{additional_instructions}"
         )
 
     return prompt

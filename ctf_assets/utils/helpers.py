@@ -23,30 +23,22 @@ if dotenv_path:
 
 def fetch_openai_key(strict: bool = True) -> str | None:
     """
-    Fetches the OpenAI API key from environment variables.
+    Fetches the OpenAI API key from the environment.
 
-    This function looks for the OpenAI API key first in the system
-    environment, then in the `.env` file of the project. If the key is
-    not found, it raises a RuntimeError or issues a warning based on the
-    value of `strict`.:
-    - If `strict=True`, it raises a RuntimeError.
-    - If `strict=False`, it issues a warning and returns None.
+    This function looks for the API key in the system environment variables or 
+    in the `.env` file of the project. If it does not find the API key or it is
+    an empty string, it raises a RuntimeError if strict=True, otherwise it 
+    logs a warning and returns None.
 
-    Args
-    ----
-        strict (bool, optional): Controls whether a missing key raises an
-            erro
-            If strict=True (default) enforce strict mode.
-            If the key is missing from the environment variables, and
-            strict=True` (default), it raises a RuntimeError.
-            - `strict=False` it logs a warning and returns None.
+    Args:
+        strict (bool): Controls what happens if API key is missing. Defaults to True.
+            - If `strict=True`, raises a RuntimeError.
+            - If `strict=False`, logs a warning and returns None.
 
-    Returns
-    -------
-        str | None: The OpenAI API key if found, otherwise None.
+    Returns:
+        (str | None): The API key if found, otherwise None.
 
-    Raises
-    ------
+    Raises:
         RuntimeError: If `strict=True` and the key is missing.
     """
     key = os.getenv("OPENAI_API_KEY") 
@@ -65,16 +57,14 @@ def fetch_openai_key(strict: bool = True) -> str | None:
 
 def validate_openai_model(model_name: str) -> str:
     '''
-    Check if model is currently supported by the OpenAI API.
+    Check if the provided model is currently supported.
 
-    Args
-    ---
-        model_name (str): The openai model passed by the user.
+    Args:
+        model_name (str): The model passed by the user.
     
     Returns
-    -------
-        model_name (str): OpenAI model to use.
-        Defaults to "gpt-4o-mini" if the provided model is not supported.
+        (str): The model name if it is supported, otherwise
+        "gpt-4o-mini".
     '''
     
     # Initialize a OpenAI API client
