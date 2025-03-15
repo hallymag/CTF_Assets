@@ -52,7 +52,7 @@ def main():
 
         # Check if that a function was passed in the module
         if not inspect.isfunction(func):
-            raise AttributeError
+            raise AttributeError(f"Module {module_name} has no valid function named '{args.function}'.")
 
         # Get function parameters and pass only valid arguments
         func_params = inspect.signature(func).parameters
@@ -67,7 +67,7 @@ def main():
     except ImportError:
         print(f"[ERROR] Module '{module_name}' could not be imported. Check if it exists.")
     except AttributeError:
-        print(f"[ERROR] Function '{args.function}' not found in '{module_name}'.")
+        print(f"[ERROR] Function '{args.function}' was not found in '{module_name}'. Check if it exists.")
     except TypeError as e:
         print(f"[ERROR] TypeError: {e}")
     except Exception as e:
