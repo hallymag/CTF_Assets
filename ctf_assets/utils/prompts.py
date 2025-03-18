@@ -78,7 +78,7 @@ def flag_prompt(
         f"Generate {amt} unique and varied {tone} CTF flags related to '{theme}' in {language}. "
         f"Each flag must strictly follow the format: {flag_format}. "
         f"Ensure all flags are distinct, logically structured, and aligned with the theme and tone. "
-        "Respond only in JSON format with this structure: {{ 'flags': ['flag1', 'flag2', ...] }}. "
+        'Respond only in JSON format with this structure: { "flags:" ["flag1", "flag2", ...] }. '
         f"{additional_instructions}"
     )
 
@@ -116,7 +116,7 @@ def story_prompt(
         f"Each story must be distinct in plot, characters, and setting, while maintaining coherence. "
         f"Ensure all stories align with the specified theme and tone. "
         f"The response must not include a title for any of the stories. "
-        "Respond only in JSON format with this structure: {{ 'stories': ['story1', 'story2', ...] }}. "
+        'Respond only in JSON format with this structure: {"stories": ["story1", "story2", ...] }. '
         f"{additional_instructions}"
     )
 
@@ -154,7 +154,7 @@ def story_prompt_with_title(
         f"Each story must be distinct in plot, characters, and setting, while maintaining coherence. "
         f"Ensure all stories align with the specified theme and tone. "
         f"Each story must include a relevant and descriptive title. "
-        "Respond only in JSON format with this structure: {{ 'stories': [{{'title': '...', 'content': '...'}}, ...] }}. "
+        'Respond only in JSON format with this structure: { "stories": [{"title1": "...", "story1": "..."}, {"title"2: "...", "story2": "..."}] }'
         f"{additional_instructions}"
     )
 
@@ -173,7 +173,6 @@ def image_prompt(
     Args:
         theme (str): General theme for the image (e.g., "cybersecurity hacker", "futuristic University").
         tone (str): Mood or atmosphere of the image (e.g., "dark and mysterious", "cheerful"). Defaults to "neutral".
-        response_format (str): Format of the response, either "json" (image URLs) or "base64" (encoded images). Defaults to "json".
         language (str): Language for any text appearing in the images. Defaults to "es-PR".
 
     Returns:
@@ -209,7 +208,7 @@ def image_prompt(
     a next-generation AI-powered computer lab. Transparent holographic screens project real-time code 
     as students engage in collaborative programming exercises. 
     Lush tropical gardens blend with solar-powered smart classrooms. 
-    Camera shot: Wide-angle panoramic, capturing both the university’s historical elements and its futuristic enhancements.
+    Camera shot: Wide-angle panoramic, capturing both the historical elements of the unviersity and its futuristic enhancements.
     Lighting: Bright and natural, mixed with soft neon glows from AI interfaces."
 
     Now, generate a similar prompt based on the provided theme and tone.

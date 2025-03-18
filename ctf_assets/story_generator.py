@@ -33,7 +33,6 @@ def generate_stories(
         theme (str): The theme of the challenge.
         amt: int: The amount of stories to generate.
         model (str): The model to use. Defaults to "gpt-4o-mini". 
-        response_format (str): Response format. Defaults to JSON.
         tone (str): The tone of the stories.
         language (str): The language to use to generate stories. Defaults to Spanish (Puerto Rico).
         category (str): The category of the challenge.
@@ -99,8 +98,7 @@ def generate_stories_with_titles(
     Args:
         theme (str): The theme of the challenge.
         amt: int: The amount of stories to generate.
-        model (str): The model to use. Defaults to "gpt-4o-mini". 
-        response_format (str): Response format. Defaults to JSON.
+        model (str): The model to use. Defaults to "gpt-4o-mini".
         tone (str): The tone of the stories.
         language (str): The language to use to generate stories. Defaults to Spanish (Puerto Rico).
         category (str): The category of the challenge.
