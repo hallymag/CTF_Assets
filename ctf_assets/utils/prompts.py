@@ -52,33 +52,38 @@ def flag_prompt(
     flag_format: str = "ctf{..}",
     language: str = "es-PR",
     additional_instructions: str = "",
-    additional_system_instructions: str = "",
+    additional_system_instructions: str = ""
 ) -> str:
     """
-    Generates a prompt that ensures flags follow the given theme, tone, and format while enforcing 
-    system-level instructions.
+        Generates a prompt that ensures flags follow the given theme, tone, and format while enforcing 
+        system-level instructions.
+        
+        Args:
+            theme (str): Theme of the flags. Defaults to "".
+            tone (str): Tone of the flags (e.g., "serious", "playful"). Defaults to "neutral".
+            amt (int): Number of flags to generate (must be ≥ 1). Defaults to 1.
+            flag_format (str): Format of the flags (e.g., "ctf{...}"). Defaults to "ctf{..}".
+            language (str): Language of the flags. Defaults to "es-PR".
+            additional_instructions (str): Extra constraints for flag generation. Defaults to "".
+            additional_system_instructions (str): System-level constraints. Defaults to "".
 
-    Args:
-        theme (str): Theme of the flags. Defaults to "".
-        tone (str): Tone of the flags (e.g., "serious", "playful"). Defaults to "neutral".
-        amt (int): Number of flags to generate (must be ≥ 1). Defaults to 1.
-        flag_format (str): Format of the flags (e.g., "ctf{...}"). Defaults to "ctf{..}".
-        language (str): Language of the flags. Defaults to "es-PR".
-        additional_instructions (str): Extra constraints for flag generation. Defaults to "".
-        additional_system_instructions (str): System-level constraints. Defaults to "".
-
-    Returns:
-        str: A detailed prompt designed to guide the LLM when generating flags.
-    """
+        Returns:
+            str: A detailed prompt designed to guide the LLM when generating flags.
+        """
     amt = max(1, amt)
     sys_prompt = system_prompt(additional_system_instructions)
 
     prompt = (
         f"{sys_prompt} "
-        f"Generate {amt} unique and varied {tone} CTF flags related to '{theme}' in {language}. "
-        f"Each flag must strictly follow the format: {flag_format}. "
-        f"Ensure all flags are distinct, logically structured, and aligned with the theme and tone. "
-        'Respond only in JSON format with this structure: { "flags:" ["flag1", "flag2", ...] }. '
+        f"Generate exactly {amt} unique CTF flags in {language}, based on the theme: '{theme}'. "
+        f"If a tone is specified, apply: '{tone}'. "
+        f"Each flag must strictly follow this format: '{flag_format}'. "
+        f"All flags must be distinct, logically structured, and thematically relevant. "
+        f"\n\nIMPORTANT: You must generate exactly {amt} flags—no more, no less. \n\n"
+        f"The response must be in the following valid JSON format, with no additional text:\n\n"
+        f'{{"flags": ["flag_1", "flag_2", ..., "flag_{amt}"]}}\n\n'
+        f"Do not include explanations, preambles, or any text outside the JSON response. "
+        f"If the number of flags is incorrect or the format is not followed, the output is invalid. "
         f"{additional_instructions}"
     )
 
@@ -90,7 +95,7 @@ def story_prompt(
     amt: int = 1,
     language: str = "es-PR",
     additional_instructions: str = "",
-    additional_system_instructions: str = "",
+    additional_system_instructions: str = ""
 ) -> str:
     """
     Generates a prompt that ensures stories follow the given theme and tone 
@@ -112,14 +117,18 @@ def story_prompt(
 
     prompt = (
         f"{sys_prompt} "
-        f"Generate {amt} unique and varied {tone} stories about '{theme}' in {language}. "
-        f"Each story must be distinct in plot, characters, and setting, while maintaining coherence. "
-        f"Ensure all stories align with the specified theme and tone. "
-        f"The response must not include a title for any of the stories. "
-        'Respond only in JSON format with this structure: {"stories": ["story1", "story2", ...] }. '
+        f"Generate exactly {amt} unique stories in {language} based on the theme: '{theme}'. "
+        f"If a tone is specified, use: '{tone}'. "
+        f"Each story must have a unique plot, characters, and setting. "
+        f"Do NOT include titles in any of the stories. "
+        f"You must generate exactly {amt} stories—no more, no less. "
+        f"Respond in valid JSON format with an array of stories, structured as follows: \n\n"
+        '{{"stories": [{{"story": "Story content..."}}, {{"story": "Another story content..."}}, ..., {{"story{amt}": "Final story content..."}}]}} \n\n'
+        "Do not include explanations, preambles, or any text outside the JSON response. "
+        f"If you do not generate exactly {amt} stories, the output is incorrect. "
         f"{additional_instructions}"
     )
-
+    
     return prompt
 
 def story_prompt_with_title(
@@ -145,16 +154,21 @@ def story_prompt_with_title(
     Returns:
         str:  A detailed prompt to guide the LLM when generating stories with titles.
     """
-    amt = max(1, amt)
+    amt = max(1, int(amt))
     sys_prompt = system_prompt(additional_system_instructions)
 
     prompt = (
         f"{sys_prompt} "
-        f"Generate {amt} unique and varied {tone} stories about '{theme}' in {language}. "
-        f"Each story must be distinct in plot, characters, and setting, while maintaining coherence. "
-        f"Ensure all stories align with the specified theme and tone. "
-        f"Each story must include a relevant and descriptive title. "
-        'Respond only in JSON format with this structure: { "stories": [{"title1": "...", "story1": "..."}, {"title"2: "...", "story2": "..."}] }'
+        f"Generate exactly {amt} unique stories in {language} based on the theme: '{theme}'. "
+        f"If a tone is specified, use: '{tone}'. "
+        f"Each story must have a unique plot, characters, and setting, and must include a title. "
+        f"You must generate exactly {amt} stories—no more, no less. "
+        f"Respond in valid JSON format with an array of stories, structured as follows:\n\n"
+        f'{{"stories": [{{"title": "Story Title 1", "story": "Story content..."}}, '
+        f'{{"title": "Story Title 2", "story": "Another story content..."}}, ..., '
+        f'{{"title": "Story Title {amt}", "story": "Final story content..."}}]}}\n\n'
+        f"Do not include explanations, preambles, or any text outside the JSON response. "
+        f"If you do not generate exactly {amt} stories, the output is incorrect. "
         f"{additional_instructions}"
     )
 

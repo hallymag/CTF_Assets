@@ -65,7 +65,7 @@ def generate_flags(
     prompt = flag_prompt(
         theme = theme,
         tone = tone,
-        amt = max(1, amt), # Handle case 0 or less amt was entered
+        amt = max(1, int(amt)), # Handle case 0 or less amt was entered
         flag_format = flag_format,
         language = language,
         additional_instructions = additional_instructions,

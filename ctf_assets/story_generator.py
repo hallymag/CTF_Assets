@@ -25,7 +25,7 @@ def generate_stories(
     additional_instructions: str = "",
     additional_system_instructions: str = "",
     temperature: float = 0.55,  # Default temperature
-    ):    
+) -> dict:  
     '''
     Generates stories based on the theme, tone, and additional arguments.
     
@@ -44,7 +44,7 @@ def generate_stories(
         temperature (float): The temperature for the model. Defaults to 0.55.
         
     Returns:
-        stories (dic): The generated stories.
+        dict: The generated stories.
     '''
     
     # Validate model. If not supported, defualt to "gtp4o-mini"
@@ -60,7 +60,7 @@ def generate_stories(
     prompt = story_prompt(
         theme = theme,
         tone = tone,
-        amt = max(1, amt),  # Handle case 0 or less amt
+        amt = max(1, int(amt)),  # Handle case 0 or less amt
         language = language,
         additional_instructions = additional_instructions,
         additional_system_instructions = additional_system_instructions,
@@ -126,7 +126,7 @@ def generate_stories_with_titles(
     prompt = story_prompt_with_title(
         theme = theme,
         tone = tone,
-        amt = max(1, amt),  # Handle case 0 or less amt
+        amt = max(1, int(amt)),  # Handle case 0 or less amt
         language = language,
         additional_instructions = additional_instructions,
         additional_system_instructions = additional_system_instructions,
