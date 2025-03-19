@@ -10,6 +10,9 @@ Functions:
 - `fetch_openai_key(strict: bool = True) -> str | None:`
 - `validate_openai_model(model_name: str) -> str:`
 """
+# TODO: Refactor to add caching to the validate_openai_model function
+# and to create a cache so that supported models are only retrieved once per session
+
 
 import os
 import warnings

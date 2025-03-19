@@ -72,7 +72,8 @@ def flag_prompt(
     return (
         f"{sys_prompt} Generate exactly {amt} unique CTF flags in {language}, based on the theme: '{theme}'. "
         f"Apply tone: '{tone}' if specified. Each flag must follow this format: '{flag_format}'. "
-        f"Output must be valid JSON with indents of 4 spaces: {{\"flags\": [\"flag_1\", ..., \"flag_{amt}\"]}}. "
+        f"Make sure that within the flag text, any multi-word parts are separated by spaces (e.g., 'ctf{{el hacker se ofusco}}') instead of underscores. "
+        f"Output must be valid JSON with 4 spaces indents: {{\"flags\": [\"flag 1\", ..., \"flag {amt}\"]}}. "
         f"Do not include any extra text outside of JSON. {additional_instructions}"
     )
 
