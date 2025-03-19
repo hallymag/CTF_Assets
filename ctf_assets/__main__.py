@@ -27,7 +27,6 @@ def main():
     parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI model to use")
     parser.add_argument("--temperature", type=float, default=0.55, help="Temperature. Value range [0,2] Higher values give more randomness")
     parser.add_argument("--flag-format", type=str, default="ctf{...}", help="Format of the flag (e.g., ctf{...})")
-    parser.add_argument("--response-format", type=str, default="JSON", help="Format of the response (e.g. JSON or [item1, item2, item3])")
     parser.add_argument("--language", type=str, default="es-PR", help="Language for the generated flag")
     parser.add_argument("--additional-instructions", type=str, default="", help="Additional user instructions for the generator")
     parser.add_argument("--additional-system-instructions", type=str, default="", help="Additional system level constraints or guidelines")
@@ -52,7 +51,7 @@ def main():
 
         # Check if that a function was passed in the module
         if not inspect.isfunction(func):
-            raise AttributeError
+            raise AttributeError(f"Module {module_name} has no valid function named '{args.function}'.")
 
         # Get function parameters and pass only valid arguments
         func_params = inspect.signature(func).parameters
@@ -67,7 +66,7 @@ def main():
     except ImportError:
         print(f"[ERROR] Module '{module_name}' could not be imported. Check if it exists.")
     except AttributeError:
-        print(f"[ERROR] Function '{args.function}' not found in '{module_name}'.")
+        print(f"[ERROR] Function '{args.function}' was not found in '{module_name}'. Check if it exists.")
     except TypeError as e:
         print(f"[ERROR] TypeError: {e}")
     except Exception as e:

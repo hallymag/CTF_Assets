@@ -8,8 +8,8 @@ Modules
 - helpers.py: Functions for environment management and model validation.
 """
 
-from .helpers import fetch_openai_key, validate_openai_model
-from .initialize_client import initialize_openai_client
+from ctf_assets.utils.helpers import fetch_openai_key, validate_openai_model
+from ctf_assets.utils.initialize_client import initialize_openai_client
 
 __all__ = [
     "fetch_openai_key",

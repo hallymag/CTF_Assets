@@ -10,6 +10,9 @@ Functions:
 - `fetch_openai_key(strict: bool = True) -> str | None:`
 - `validate_openai_model(model_name: str) -> str:`
 """
+# TODO: Refactor to add caching to the validate_openai_model function
+# and to create a cache so that supported models are only retrieved once per session
+
 
 import os
 import warnings
@@ -66,11 +69,14 @@ def validate_openai_model(model_name: str) -> str:
         (str): The model name if it is supported, otherwise
         "gpt-4o-mini".
     '''
+    # TODO: implement caching so that it only creates the supported models once per session
     
     # Initialize a OpenAI API client
     client = OpenAI()
     
     # Retrieve list of currently supported OpenAI API models
     supported_models = [model.id for model in client.models.list()]
+    
+    model_name = model_name.lower()  # Normalize model name
     
     return model_name if model_name in supported_models else "gpt-4o-mini"

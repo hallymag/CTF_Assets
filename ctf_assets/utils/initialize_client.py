@@ -12,6 +12,9 @@ Functions:
 from openai import OpenAI
 from ctf_assets.utils.helpers import fetch_openai_key
 
+# TODO: refactor to create a shared_client instance. 
+# Change module so that it creates a single client instance that can be passed around
+
 
 def initialize_openai_client(strict: bool = True) -> (OpenAI | None):
     """

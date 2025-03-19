@@ -7,10 +7,10 @@
 
         {
             "name": "Debug CTF-Assets CLI",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "module": "ctf_assets.__main__",  
-            "args": ["flags", "generate_flags", "--theme", "Star Wars", "--tone", "funny", "--amt", "10"],
+            "module": "ctf_assets.__main__",
+            "args": ["stories", "generate_stories", "--theme", "Star Wars", "--tone", "funny", "--amt", "2"],
             "console": "integratedTerminal"
         }
     ]
