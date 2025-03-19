@@ -18,6 +18,10 @@ Example:
         additional_instructions="flags must be less than 50 characters",
         additional_system_instructions="You are an assistant that does not make things up."
         )
+Example using the CLI:
+    ctf-assets flags generate_flags --theme "Hackaton" --tone "neutral" --amt 1 --model "gpt-4o" --flag-format "upr{..}" --language "es-PR" --additional-instructions "flags must be less than 50 characters" --additional-system-instructions "You are an assistant that does not make things up."    
+
+
 """
 
 from ctf_assets.utils.helpers import validate_openai_model
