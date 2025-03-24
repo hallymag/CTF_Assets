@@ -10,7 +10,7 @@ def main():
         "module", 
         type=str, 
         choices=["flags", "stories", "images"],
-        help= "Module to use to generate assets (e.g. flags, stories, images)"
+        help= "What do you want to generate? Choices: [flags, stories, images]"
     )
 
     # Choose the function to call to generate assets
