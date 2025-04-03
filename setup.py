@@ -18,5 +18,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: Linux",
     ],
-    python_requires=">=3.12.9",
+    python_requires=">=3.10.12",
 )
