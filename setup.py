@@ -14,9 +14,9 @@ setup(
         ],
     },
     classifiers=[
-        "Programming Language :: Python :: 3.12.9",
+        "Programming Language :: Python :: 3.10.12",
         "License :: OSI Approved :: MIT License",
         "Operating System :: Linux",
     ],
-    python_requires=">=3.12.9",
+    python_requires=">=3.10.12",
 )
