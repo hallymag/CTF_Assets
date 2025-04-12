@@ -6,5 +6,5 @@ from ctf_assets.story_generator import generate_stories
 __all__ = [
         "generate_flags", 
         "generate_images", 
-        "generate_stories", 
+        "generate_stories"
 ]
