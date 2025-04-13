@@ -8,7 +8,7 @@ This module provides:
 Functions:
 ----------
 - `fetch_openai_key(strict: bool = True) -> str | None:`
-- `validate_openai_model(model_name: str) -> str:`
+- `validate_openai_model(model: str) -> str:`
 """
 
 # import os
@@ -19,6 +19,7 @@ from ctf_assets.config import fetch_openai_key
 # Cache OpenAI currently supported models and reasoning models, initially set to None
 supported_openai_models = None
 reasoning_openai_models = None
+image_models = None
 
 # # Load environment
 # load_dotenv()
@@ -125,7 +126,7 @@ def get_reasoning_openai_models():
 
     return reasoning_openai_models
  
-def validate_openai_model(model_name: str) -> str:
+def validate_openai_model(model: str) -> str:
     """
     Check if the provided OpenAI model is currently supported.
 
@@ -135,7 +136,7 @@ def validate_openai_model(model_name: str) -> str:
     name, "gpt-4o-mini".
 
     Args:
-        model_name (str): The name of the OpenAI model to validate.
+        mode (str): The name of the OpenAI model to validate.
 
     Returns:
         str: The provided model name if it is supported, otherwise 
@@ -154,4 +155,34 @@ def validate_openai_model(model_name: str) -> str:
         # Retrieve list of currently supported OpenAI API models
         supported_openai_models = get_supported_openai_models()
 
-    return model_name if model_name in supported_openai_models else "gpt-4o-mini"
+    return model if model in supported_openai_models else "gpt-4o-mini"
+
+def get_image_models():
+    """
+    Retrieve and cache the list of OpenAI image models.
+    This function retrieves the list of all supported OpenAI models using
+    the `get_supported_openai_models()` function and filters them to include
+    only the image models, which are defined as models whose IDs start with the characters "dall".
+    The image models are then cached for future use.
+    If the image models have already been cached, the function will return
+    the cached list without making an API call.
+    Returns:
+        list: A list of supported OpenAI image model IDs.
+    Example:
+        >>> get_image_models()
+        ["dall-e-2", "dall-e-3"]
+    """
+    global supported_openai_models
+    global image_models
+
+    if image_models is None:
+        # Initialize an OpenAI API client
+        client = OpenAI(api_key=fetch_openai_key(strict=True))
+
+        # Retrieve list of currently supported OpenAI models
+        supported_openai_models = get_supported_openai_models()
+
+        # Filter the models to include image models (those that start with "dall")
+        image_models = [model for model in supported_openai_models if model.startswith("dall")]
+    
+    return image_models

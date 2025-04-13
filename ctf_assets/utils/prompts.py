@@ -41,7 +41,8 @@ def compose_partial_text(amt=1, asset_type="", theme="", tone="neutral", languag
     # Create a mapping for converting plural to singular
     plural_to_singular = {
         "flags": "flag",
-        "stories": "story"        
+        "stories": "story",
+        "images": "image",        
     }
     
     # If amt == 1, convert the noun to singular; otherwise, use the noun as given.
@@ -49,10 +50,10 @@ def compose_partial_text(amt=1, asset_type="", theme="", tone="neutral", languag
         noun_form = plural_to_singular.get(asset_type.lower(), asset_type)
     else:
         noun_form = asset_type
-    
+        
     # If theme is provided, include the related clause.
     if theme:
-        related = f" related to the theme: {theme}. "
+        related = f"related to the theme: {theme}. "
     else:
         related = "about a random subject"
     
@@ -61,8 +62,15 @@ def compose_partial_text(amt=1, asset_type="", theme="", tone="neutral", languag
         title = "with title"
     else:
         title = ""
-  
-    return f"Generate exactly {amt} {tone} {noun_form} {title} {related} in {language}. "
+    
+    if asset_type== "images" or asset_type== "image":
+        if noun_form == "image":
+            noun_form = "detailed prompt for generating a photorealistic image "
+        else:
+            noun_form = "detailed prompts for generating photorealistic images "
+        language = ""
+
+    return f"Generate exactly {amt} {tone} {noun_form} {title} {related} {language}. "
 
 def system_prompt(additional_system_instructions = "") -> str:
     """
@@ -182,5 +190,39 @@ def story_prompt(
      
     if additional_instructions:
         prompt += f" {additional_instructions}"
+
+    return prompt
+
+def image_prompt(
+        asset_type="images",
+        theme="",
+        tone = "neutral", 
+        amt = 1,
+        language = "es-PR",
+        additional_instructions= ""
+):
+    
+    partial_prompt = compose_partial_text(asset_type=asset_type, amt=amt, theme=theme, tone=tone, language="")
+
+    if theme:
+        theme_txt = f"The focus of the image should center around the theme: {theme}. "
+
+    if tone:
+        tone_txt = f"Prompts should produce {tone} images. "
+
+
+    prompt=(
+            "You are helpfull creative assistant for a photographer"
+            "You are tasked with providing detailed descriptions to generate images. "
+            "You will be provided with a theme and tone which you will use to guide you. "
+            "Do not include any other information in the prompt. "
+            f"{partial_prompt} "
+            "The prompt needs to produce a photorealistic image. "
+            f"If the image contains any text it should be in {language}. "
+            f"{theme_txt}{tone_txt}"
+            f"{additional_instructions} "   
+        )
+
+    print(f"Prompt: {prompt}\n")
 
     return prompt

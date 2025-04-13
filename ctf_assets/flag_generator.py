@@ -73,7 +73,7 @@ def generate_flags(
     # Load environment
     
     # Validate model selection. If the model is not supported, default to "gpt-4o-mini"
-    model = validate_openai_model(model_name=model) 
+    model = validate_openai_model(model=model) 
 
     # # Initialize OpenAI API client
     # client = openai.OpenAI()

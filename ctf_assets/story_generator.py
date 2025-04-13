@@ -34,7 +34,7 @@ def generate_stories(
     ) -> list[str] | list[list[str]]:    
 
     # Validate model. If not supported, defualt to "gtp4o-mini"
-    model = validate_openai_model(model_name=model)
+    model = validate_openai_model(model=model)
     
     # Initialize the OpenAI API client
     client = OpenAI(api_key=fetch_openai_key(strict=True))
