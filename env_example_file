@@ -1,0 +1,5 @@
+### Make sure you name this file .env and place it in the root of your project
+OPENAI_API_KEY=My-key-here
+GOOGLE_API_KEY=My-key-here
+ANTHROPIC_API_KEY=My-key-here
+DEEPSEEK_API_KEY=My-key-here
