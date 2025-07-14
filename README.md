@@ -5,7 +5,7 @@ Library for using LLMs to generate assets for CTF capture the flag challenges.
 #### Clone app from github to a local folder
 ```bash
 git clone https://github.com/hallymag/CTF-Assets.git
-cd CCTF_Assets
+cd CTF_Assets
 ```
 ### 1. Create virtual environment and upgrade python package manager
 
