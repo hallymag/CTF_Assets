@@ -1,6 +1,8 @@
 # CTF_Assets
 Library for using LLMs to generate assets for CTF capture the flag challenges.
 
+Install a Python Version Manager such as pyenv. This software is set to require Python >=3.12.9
+
 ## Installation
 #### Clone app from github to a local folder
 ```bash
