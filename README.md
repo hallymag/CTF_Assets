@@ -2,8 +2,12 @@
 Library for using LLMs to generate assets for CTF capture the flag challenges.
 
 ## Installation
-
-### 1. Install the CTF_Assets Package
+#### Clone app from github to a local folder
+```bash
+git clone https://github.com/hallymag/CTF-Assets.git
+cd CCTF_Assets
+```
+### 1. Create virtual environment and upgrade python package manager
 
 ```bash
 python -m venv venv
@@ -12,8 +16,8 @@ python -m ensurepip --upgrade
 python -m pip install --upgrade pip
 ```
 
-### 2. Install python package from a local path
-#### Clone github to a local folder
+### 2. Install python app to run from a local path
+#### Clone app from github to a local folder
 ```bash
 git clone https://github.com/hallymag/CTF-Assets.git
 ```
