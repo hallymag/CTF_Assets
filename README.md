@@ -21,7 +21,7 @@ python -m pip install --upgrade pip
 ### 2. Install python app to run from a local path
 #### Clone app from github to a local folder
 ```bash
-git clone https://github.com/hallymag/CTF-Assets.git
+git clone https://github.com/hallymag/CTF_Assets.git
 ```
 #### Install package.
 Install package as editable since it is still in development. 
