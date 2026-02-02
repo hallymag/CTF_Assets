@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctf-assets"
+version = "0.1.0"
+description = "LLM-powered asset generation library for Capture The Flag (CTF) challenges"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Hallyma Gauthier" }]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["ctf", "cybersecurity", "llm", "education", "ctfd", "challenge-generation"]
+classifiers = [
+  "Development Status :: 1 - Alpha",
+  "Topic :: CTF challenges",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "openai>=1.0.0",
+  "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Source = "https://github.com/hallymag/CTF_Assets"
+"Bug Tracker" = "https://github.com/hallymag/CTF_Assets/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+  "build>=1.2",
+  "twine>=5",
+]
+
+[project.scripts]
+ctf-assets = "ctf_assets.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ctf_assets*"]

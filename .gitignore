@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# Editors/OS
+.vscode/
+.idea/
+*~
+
+#*#
+.DS_Store
+Thumbs.db
+
 # Distribution / packaging
 .Python
 build/
@@ -20,8 +29,10 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
+downloaded_images/
 .installed.cfg
 *.egg
 MANIFEST

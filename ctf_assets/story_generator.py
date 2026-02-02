@@ -31,7 +31,7 @@ def generate_stories(
         additional_instructions: str = "",
         additional_system_instructions: str = "",
         temperature: float = 0.65  # Default temperature
-    ) -> list[str] | list[list[str]]:    
+    ) -> list[str] | list[dict[str, str]]:    
 
     # Validate model. If not supported, defualt to "gtp4o-mini"
     model = validate_openai_model(model=model)
@@ -40,7 +40,7 @@ def generate_stories(
     client = OpenAI(api_key=fetch_openai_key(strict=True))
     
     if client is None:
-        return "OpenAI client failed to initialized. Exiting."
+        raise RuntimeError("OpenAI client failed to initialize. Check OPENAI_API_KEY.")
 
     # Create the user's role content (prompt)
     prompt = story_prompt(
@@ -90,7 +90,7 @@ def generate_stories(
 
     except OpenAIError as e:
         print(f"[ERROR] OpenAI API error: {e}")
-        return 1
+        raise RuntimeError(f"OpenAI API error: {e}")
     
     if title:
         return parse_titled_stories(response=response.output_text) 
@@ -98,3 +98,27 @@ def generate_stories(
         return parse_stories(response=response.output_text)
     
 
+
+
+def generate_stories_with_titles(
+        amt: int = 1,
+        theme: str = "",
+        tone: str = "neutral",
+        model: str = "gpt-4o-mini",
+        language: str = "es-PR",
+        additional_instructions: str = "",
+        additional_system_instructions: str = "",
+        temperature: float = 0.65,
+    ) -> list[dict[str, str]]:
+    """Convenience wrapper that always returns titled stories."""
+    return generate_stories(
+        amt=amt,
+        theme=theme,
+        tone=tone,
+        title=True,
+        model=model,
+        language=language,
+        additional_instructions=additional_instructions,
+        additional_system_instructions=additional_system_instructions,
+        temperature=temperature,
+    )

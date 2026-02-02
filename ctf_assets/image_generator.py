@@ -1,84 +1,142 @@
-import os
-import openai
-from openai import OpenAI 
+from __future__ import annotations
+
+import base64
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+from openai import OpenAI, OpenAIError
+
 from ctf_assets.config import fetch_openai_key
-from warnings import warn
 from ctf_assets.utils.prompts import image_prompt
 
-def image_directory():
-    # set a directory to save DALL·E images to
-    image_dir_name = "downloaded_images"
-    image_dir = os.path.join(os.curdir, image_dir_name)
 
-    # create the directory if it doesn't yet exist
-    if not os.path.isdir(image_dir):
-        os.mkdir(image_dir)
+def image_directory(dir_name: str = "downloaded_images") -> Path:
+    """Create (if needed) and return the directory used to store generated images."""
+    outdir = (Path.cwd() / dir_name).resolve()
+    outdir.mkdir(parents=True, exist_ok=True)
+    return outdir
 
-    # print the directory to save to
-    print(f"Image directory: {image_dir}\n")
 
-def generate_images(image_model: str="dall-e-2", 
-                    theme: str="", 
-                    tone: str="", 
-                    amt: int=1, 
-                    style: str="vivid", 
-                    quality: str="standard", 
-                    size: str="1024x1024",
-                    prompt_model: str="gpt-40-mini"):
+@dataclass(frozen=True)
+class ImageResult:
+    files: list[str]
+    prompt: str
 
-    api_key = fetch_openai_key()
 
+def _timestamp() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
+
+
+def generate_images(
+    image_model: str = "dall-e-3",
+    theme: str = "",
+    tone: str = "neutral",
+    amt: int = 1,
+    style: str = "vivid",
+    quality: str = "standard",
+    size: str = "1024x1024",
+    prompt_model: str = "gpt-4o-mini",
+    language: str = "es-PR",
+    output_dir: str | Path = "downloaded_images",
+    filename_prefix: Optional[str] = None,
+    prompt_override: Optional[str] = None,
+    return_prompt: bool = False,
+) -> list[str] | ImageResult:
+    """Generate images and write them to files.
+
+    Returns:
+        - list[str]: paths of images written to disk (default)
+        - ImageResult: (files, prompt) if return_prompt=True
+    """
+    api_key = fetch_openai_key(strict=True)
     client = OpenAI(api_key=api_key)
-    
-    if image_model.lower() not in ["dall-e-2", "dall-e-3"]:
-        print(f"Invalid image model: {image_model}. Defaulting to DALL-E 2.")
-        warn(f"Invalid image model: {image_model}. Defaulting to DALL-E 2.")
-        image_model = "dall-e-2"
 
-    # DALLE-3 can only generate 1 image at a time
-    if image_model == "dall-e-3": 
-        amt=1
-    # DALLE-2 can generate 1-10 images at a time
+    # Normalize / validate
+    image_model = (image_model or "dall-e-3").lower()
+    if image_model not in {"dall-e-2", "dall-e-3"}:
+        image_model = "dall-e-3"
+
+    amt = int(amt) if amt and int(amt) > 0 else 1
+    if image_model == "dall-e-3":
+        # DALL·E 3 currently supports n=1
+        amt = 1
     else:
-        if amt >= 10: 
-            amt = 10
-        elif amt > 0: 
-            amt = int(amt)
-        else: 
-            amt = 1
+        # DALL·E 2 supports 1..10
+        amt = max(1, min(10, amt))
 
-    prompt= image_prompt(
-        theme=theme,
-        tone = tone, 
-        amt = amt,
-        language = "es-PR")
+    outdir = Path(output_dir).expanduser().resolve()
+    outdir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Prompt: {prompt}\n")
-
-    # Generate an image prompt
-    try:
-        response = client.responses.create(
-            model=prompt_model,
-            input=prompt,
+    # 1) Build or override the text-to-image prompt
+    if prompt_override and prompt_override.strip():
+        prompt_t2i = prompt_override.strip()
+    else:
+        prompt_for_llm = image_prompt(
+            theme=theme,
+            tone=tone,
+            amt=amt,
+            language=language,
         )
-    except openai.OpenAIError as e:
-        print(f"[ERROR] Generating prompt. OpenAI API error: {e}")
-        return 1
+        try:
+            resp = client.responses.create(
+                model=prompt_model,
+                input=prompt_for_llm,
+            )
+        except OpenAIError as e:
+            raise RuntimeError(f"OpenAI API error while generating image prompt: {e}") from e
 
-    # Extract the generated prompt
-    prompt_t2i= response.output_text
+        prompt_t2i = (resp.output_text or "").strip()
+        if not prompt_t2i:
+            raise RuntimeError("Empty prompt generated for image creation.")
 
+    # 2) Generate images
     try:
-        img = client.images.generate(
-            image_model="model",
+        img_resp = client.images.generate(
+            model=image_model,
             prompt=prompt_t2i,
             n=amt,
             size=size,
-            quality=quality,
-            style=style,
-            # response_format= "b64_json"
-    )
-    except openai.OpenAIError as e:
-        print(f"[ERROR] Generating images. OpenAI API error: {e}")
-        return 1
-    print(response.data[0].url)
+            quality=quality if image_model == "dall-e-3" else None,
+            style=style if image_model == "dall-e-3" else None,
+            response_format="b64_json",
+        )
+    except TypeError:
+        # Some SDK versions don't accept None for these params; retry without them.
+        try:
+            img_resp = client.images.generate(
+                model=image_model,
+                prompt=prompt_t2i,
+                n=amt,
+                size=size,
+                response_format="b64_json",
+            )
+        except OpenAIError as e:
+            raise RuntimeError(f"OpenAI API error while generating images: {e}") from e
+    except OpenAIError as e:
+        raise RuntimeError(f"OpenAI API error while generating images: {e}") from e
+
+    # 3) Write to files
+    prefix = (filename_prefix or theme or "image").strip().replace(" ", "_")
+    prefix = "".join(ch for ch in prefix if ch.isalnum() or ch in "-_") or "image"
+    stamp = _timestamp()
+
+    files: list[str] = []
+    for i, item in enumerate(getattr(img_resp, "data", []) or []):
+        if isinstance(item, dict):
+            b64 = item.get("b64_json")
+        else:
+            b64 = getattr(item, "b64_json", None)
+        if not b64:
+            # If the API returned URLs instead, we can't download without internet in this library.
+            # Fail clearly so caller can switch response_format.
+            raise RuntimeError("Image response did not include base64 data (b64_json).")
+
+        data = base64.b64decode(b64)
+        filename = f"{stamp}_{prefix}_{i}.png"
+        path = outdir / filename
+        path.write_bytes(data)
+        files.append(str(path))
+
+    return ImageResult(files=files, prompt=prompt_t2i) if return_prompt else files

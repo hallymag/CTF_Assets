@@ -1,6 +1,8 @@
 import argparse
 import importlib    # To import modules at runtime instead of hardcoding them
 import inspect  #
+import sys
+from dotenv import load_dotenv, find_dotenv
 
 def main():
     parser = argparse.ArgumentParser(description="CTF Assets Generator CLI")
@@ -24,7 +26,7 @@ def main():
     parser.add_argument("--theme", type=str, default= "", help= "Theme for the CTF challenge")
     parser.add_argument("--tone", type=str, default="neutral", help="Tone to use (e.g. neutral, funny, formal)")
     parser.add_argument("--amt", type=int, default=1, help="How many to generate")
-    parser.add_argument("--title", type=bool, default=False, help="Wheter to include a title in the generated stories")
+    parser.add_argument("--title", action="store_true", help="Wheter to include a title in the generated stories")
     parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI model to use")
     parser.add_argument("--temperature", type=float, default=0.65, help="Temperature. Value range [0,2] Higher values give more randomness")
     parser.add_argument("--flag-format", type=str, default="ctf{...}", help="Format of the flag (e.g., ctf{...})")
@@ -32,7 +34,32 @@ def main():
     parser.add_argument("--additional-instructions", type=str, default="", help="Additional user instructions for the generator")
     parser.add_argument("--additional-system-instructions", type=str, default="", help="Additional system level constraints or guidelines")
 
+    # Image-specific parameters
+    parser.add_argument("--image-model", type=str, default="dall-e-3", help="Image model to use (dall-e-2 or dall-e-3)")
+    parser.add_argument("--prompt-model", type=str, default="gpt-4o-mini", help="Text model to generate the image prompt")
+    parser.add_argument("--size", type=str, default="1024x1024", help="Image size (e.g., 1024x1024)")
+    parser.add_argument("--quality", type=str, default="standard", help="Image quality (dall-e-3 only; standard or hd)")
+    parser.add_argument("--style", type=str, default="vivid", help="Image style (dall-e-3 only; vivid or natural)")
+    parser.add_argument("--output-dir", type=str, default="downloaded_images", help="Directory to write images to")
+    parser.add_argument("--filename-prefix", type=str, default=None, help="Optional filename prefix for saved images")
+    parser.add_argument("--prompt-override", type=str, default=None, help="Optional: provide your own image prompt instead of generating one")
+    parser.add_argument("--return-prompt", action="store_true", help="For images: also print the final prompt used")
+
     args = parser.parse_args()
+
+    # Back-compat: if user sets --model for images, treat it as --prompt-model.
+    if args.asset_category == "images" and "--model" in sys.argv and "--prompt-model" not in sys.argv:
+        args.prompt_model = args.model
+
+    dotenv_path = find_dotenv(usecwd=True)
+    if dotenv_path:
+        load_dotenv(dotenv_path, override=False)
+    else:
+        print(
+        "[ctf-assets] Note: No .env file found (searched upward from the current working directory). "
+        "Set OPENAI_API_KEY in your environment or create a .env file.",
+        file=sys.stderr,
+    )
 
     mappings = {
         "flags": "ctf_assets.flag_generator",

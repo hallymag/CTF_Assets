@@ -128,7 +128,6 @@ def generate_flags(
             )
 
     except OpenAIError as e:
-        print(f"[ERROR] OpenAI API error: {e}")
-        return 1
+        raise RuntimeError(f"OpenAI API error: {e}")
     
     return parse_flags(response=response.output_text)

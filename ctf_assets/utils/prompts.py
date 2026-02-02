@@ -204,6 +204,9 @@ def image_prompt(
     
     partial_prompt = compose_partial_text(asset_type=asset_type, amt=amt, theme=theme, tone=tone, language="")
 
+    theme_txt = ""
+    tone_txt = ""
+
     if theme:
         theme_txt = f"The focus of the image should center around the theme: {theme}. "
 
@@ -212,7 +215,7 @@ def image_prompt(
 
 
     prompt=(
-            "You are helpfull creative assistant for a photographer"
+            "You are a helpful creative assistant for a photographer. "
             "You are tasked with providing detailed descriptions to generate images. "
             "You will be provided with a theme and tone which you will use to guide you. "
             "Do not include any other information in the prompt. "
@@ -222,7 +225,5 @@ def image_prompt(
             f"{theme_txt}{tone_txt}"
             f"{additional_instructions} "   
         )
-
-    print(f"Prompt: {prompt}\n")
 
     return prompt

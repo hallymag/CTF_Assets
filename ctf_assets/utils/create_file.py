@@ -1,47 +1,21 @@
-import os
+from __future__ import annotations
+
+from pathlib import Path
 import re
 
-# To DO: 
-#   Use regex instead of creating valid_char
-#   use re.compile to compile the regex pattern once and use it multiple times
-#   
-def remove_invalid_chars(filename: str) -> str:
-    # re.compile
-    pass
-
+_INVALID_CHARS = re.compile(r"[^A-Za-z0-9._-]+")
 
 def sanitize_filename(filename: str) -> str:
-    """
-    Sanitize the filename by removing invalid characters.
+    """Return a filesystem-safe filename (keeps A-Z a-z 0-9 . _ -)."""
+    filename = filename.strip().replace(" ", "_")
+    filename = _INVALID_CHARS.sub("", filename)
+    # avoid empty names
+    return filename or "output"
 
-    Args:
-        filename (str): The original filename.
 
-    Returns:
-        str: The sanitized filename.
-    """
-    # Define a set of valid characters
-    valid_chars = "-_.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-    # Remove invalid characters
-    return ''.join(c for c in filename if c in valid_chars)
-
-def create_file(file_path: str, content: str, filename: str) -> None:
-    """
-    Create a file with the specified content.
-
-    Args:
-        file_path (str): The path where the file will be created.
-        content (str): The content to write into the file.
-
-    Raises:
-        OSError: If there is an error creating or writing to the file.
-    """
-    arr = list(content)
-    
-    try:
-        with open(file_path, 'w') as file:
-            pass
-
-    except OSError as e:
-            raise OSError(f"Error creating file {file_path}: {e}")
+def create_file(file_path: str | Path, content: str, *, encoding: str = "utf-8") -> Path:
+    """Create (or overwrite) a file and write content. Returns the Path."""
+    path = Path(file_path).expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding=encoding)
+    return path

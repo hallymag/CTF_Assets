@@ -2,13 +2,11 @@
 
 import os
 import warnings
-from dotenv import load_dotenv
 
 # Cache for the OpenAI API key
 _openai_api_key = None
 
 # Load environment variables from .env file if it exists
-load_dotenv()
 
 def fetch_openai_key(strict: bool = True) -> str | None:
     """
