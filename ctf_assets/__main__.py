@@ -70,29 +70,39 @@ def main():
     # retrieve the module name from the mappings dictionary
     module_name = mappings[args.asset_category]
 
+    # Only allow these functions to be called from the CLI for security reasons
+    allowed_functions = {
+        "flags": {"generate_flags"},
+        "stories": {"generate_stories", "generate_stories_with_titles"},
+        "images": {"generate_images"},
+    }
+
     try:
-            # Import the module at runtime
-            module = importlib.import_module(module_name)
+        # Import the module at runtime
+        module = importlib.import_module(module_name)
 
-            # Replace in the unction name a hyphens with underscores
-            function_name = args.function.replace("-", "_")
+        # Replace in the function name the hyphens with underscores
+        function_name = args.function.replace("-", "_")
 
-            # Get the function to call from the module
-            func = getattr(module, function_name)
+        if function_name not in allowed_functions.get(args.asset_category, set()):
+            raise AttributeError
 
-            # Check if a 'function' was passed in the module
-            if not inspect.isfunction(func):
-                raise AttributeError
+        # Get the function to call from the module
+        func = getattr(module, function_name)
 
-            # Get function parameters and pass only valid arguments
-            func_params = inspect.signature(func).parameters
-            func_args = {k: v for k, v in vars(args).items() if k in func_params}
+        # Check if a 'function' was passed in the module
+        if not inspect.isfunction(func):
+            raise AttributeError
 
-            # Call the function with valid arguments only (excluding 'asset_category' and 'function')
-            result = func(**func_args)
-            
-            # Output result
-            print(result)
+        # Get function parameters and pass only valid arguments
+        func_params = inspect.signature(func).parameters
+        func_args = {k: v for k, v in vars(args).items() if k in func_params}
+
+        # Call the function with valid arguments only (excluding 'asset_category' and 'function')
+        result = func(**func_args)
+        
+        # Output result
+        print(result)
 
     except ImportError:
         print(f"[ERROR] Module '{module_name}' could not be imported. Check if it exists.")

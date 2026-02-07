@@ -26,7 +26,7 @@ class ImageResult:
 
 
 def _timestamp() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
+    return datetime.now().astimezone().strftime("%Y-%m-%d_%I-%M-%S_%p")
 
 
 def generate_images(
@@ -70,8 +70,9 @@ def generate_images(
     outdir.mkdir(parents=True, exist_ok=True)
 
     # 1) Build or override the text-to-image prompt
-    if prompt_override and prompt_override.strip():
-        prompt_t2i = prompt_override.strip()
+    strip_prompt_override = (prompt_override or "").strip()
+    if strip_prompt_override:
+        prompt_t2i = strip_prompt_override
     else:
         prompt_for_llm = image_prompt(
             theme=theme,
